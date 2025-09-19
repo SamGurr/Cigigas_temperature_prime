@@ -32,7 +32,6 @@ library(coxme)
 library(survminer)
 library(ggsurvfit) # survfit2
 library(gtsummary) # tbl_survfit
-
 ```
 
 ### LOAD DATA
@@ -49,8 +48,9 @@ df_raw <- df_raw %>% mutate_at(2:ncol(df_raw), ~as.numeric(as.character(.)))
 
 
 # loop matrix, start this
-loop_columns          <- data.frame(matrix(nrow = 1, ncol = 5))
-colnames(loop_columns) <- c('Date', 'Tank_number', 'Treatment', 'Count', 'Percent_Survival') # names for comuns in the for loop
+loop_columns          <- data.frame(matrix(nrow = 1, ncol = 7))
+colnames(loop_columns) <- c('Date', 'Tank_number', 'Treatment', 
+                            'Count_Alive', 'Count_Dead', 'Daily_Count_Dead', 'Percent_Survival') # names for comuns in the for loop
 
 # output file from the for loops
 df_cols <- data.frame()
@@ -67,13 +67,15 @@ for(r in 1:nrow(df_raw))  { # for each row
       
       cumulative.sum <- cumsum(df_raw[c]) # culative sum of the entire column c
       
-      count.dead     <- cumulative.sum[r,] # the cumulative count dead at loop.date row r, column c
+      cum.count.dead   <- cumulative.sum[r,] # the cumulative count dead at loop.date row r, column c
       
-      count.alive    <- 20 - count.dead # all tanks started with 20 individuals!
+      daily.count.dead <- df_raw[r,c]
+      
+      count.alive      <- 20 - cum.count.dead # all tanks started with 20 individuals!
       
       percent.survival <- (count.alive/20)*100
       
-      tank.num       <- as.numeric(gsub('.*_', '', colnames(df_raw[c])))
+      tank.num         <- as.numeric(gsub('.*_', '', colnames(df_raw[c])))
       
       
   
@@ -91,7 +93,11 @@ for(r in 1:nrow(df_raw))  { # for each row
      loop_columns$Treatment = "30 minutes"
    }
   
-  loop_columns$Count                  <- count.alive
+  loop_columns$Count_Alive           <- count.alive
+  
+  loop_columns$Count_Dead            <- cum.count.dead # cumulative sum of count dead
+  
+  loop_columns$Daily_Count_Dead      <- daily.count.dead # cumulative sum of count dead
   
   loop_columns$Percent_Survival      <- percent.survival 
   
@@ -105,7 +111,7 @@ for(r in 1:nrow(df_raw))  { # for each row
     print(df_out) # print to monitor progress
     
 } # close rows for each date - output cumulative table row by row for each tank
-
+View(df_out)
 ```
 
 
@@ -203,15 +209,17 @@ to cater to this difference to make meaningful comparisons
 ```{r KM data}
 # create new columns for live and dead based on the count and proportion (of alive) tobackcalculate dead - these are integers! 
 df_KM <- df_out %>% 
-          dplyr::mutate(Count = 
-                          as.numeric(gsub(",","",Count))) %>% # remove the commas from these numbers- id as character if not removed!
-          dplyr::rename(Count_alive = Count) %>% # rename to avoid confusion
+          dplyr::mutate(Count_Alive = 
+                          as.numeric(gsub(",","",Count_Alive))) %>% # remove the commas from these numbers- id as character if not removed!
           dplyr::mutate(proportion = Percent_Survival/100,
                         Count_total = case_when(proportion == 0 ~ 0,
                                                 proportion >0 ~
                                                  (1/as.numeric(proportion))*
-                                                 as.numeric(Count_alive)),# proportion is that of alive
-                           Count_dead = Count_total - Count_alive)
+                                                 as.numeric(Count_Alive)))# %>% # proportion is that of alive
+                           #Count_dead = Count_total - Count_Alive)
+          # dplyr::filter(!proportion == 0.00) # omit rows where the number of live individuals is 0
+
+View(df_KM)
 ```
 
 ```{r convert to binary F1 Experiment #2}
@@ -225,8 +233,8 @@ for (i in 1:nrow(df_KM)) {
    #count_alive <- round(df_Exp2[i,]$Count_alive/100) # divide all counts by 1000, round to nearest
    #count_dead  <- round(df_Exp2[i,]$Count_dead/100)  # divide all counts by 1000, round to nearest
    
-   count_alive <- round(df_KM[i,]$Count_alive) # raw counts
-   count_dead  <- round(df_KM[i,]$Count_dead)  # raw counts
+   count_alive <- round(df_KM[i,]$Count_Alive) # raw counts
+   count_dead  <- round(df_KM[i,]$Daily_Count_Dead)  # raw counts
    
    loopDF           <- data.frame(matrix(0,ncol = 4, nrow = (count_alive + count_dead))) 
    colnames(loopDF) <- (c('Date','Treatment','Tank_number','Count_dead'))
@@ -243,7 +251,7 @@ for (i in 1:nrow(df_KM)) {
 }
 
 df_binary <- df_binary %>% na.omit()
-
+# View(df_binary)
 
 # Convert to Date class
 dates_asDate <- as.Date(df_binary$Date, format = "%Y%m%d")
