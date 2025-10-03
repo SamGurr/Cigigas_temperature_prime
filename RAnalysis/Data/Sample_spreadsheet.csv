@@ -1,0 +1,204 @@
+﻿Date,Timepoint,Tube ID,Downweller ID,Fixative,Purpose,Location
+20250929,baseline,1,12,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,2,12,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,3,12,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,4,12,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,5,13,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,6,13,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,7,13,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,8,13,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,9,20,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,10,20,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,11,20,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,12,20,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,13,16,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,14,16,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,15,16,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,16,16,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,17,15,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,18,15,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,19,15,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,20,15,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,21,11,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,22,11,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,23,11,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,24,11,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,25,18,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,26,18,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,27,18,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,28,18,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,29,19,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,30,19,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,31,19,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,32,19,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,33,17,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,34,17,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,35,17,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,36,17,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,37,24,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,38,24,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,39,24,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,40,24,LN2,microbiome / homogenate assays,NOAA -80C
+20250929,baseline,41,12,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,42,12,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,43,12,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,44,13,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,45,13,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,46,13,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,47,20,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,48,20,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,49,20,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,50,16,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,51,16,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,52,16,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,53,15,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,54,15,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,55,15,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,56,11,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,57,11,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,58,11,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,59,18,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,60,18,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,61,18,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,62,19,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,63,19,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,64,19,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,65,17,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,66,17,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,67,17,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,68,24,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,69,24,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20250929,baseline,70,24,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,71,25,500 ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,72,25,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,73,27,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,74,27,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,75,1,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,76,1,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,77,30,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,78,30,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,79,24,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,80,24,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,81,31,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,82,31,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,83,19,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,84,18,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,85,19,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,86,18,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,87,35,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,88,35,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,89,5,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,90,5,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,91,14,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,92,14,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,93,11,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,94,11,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,95,15,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,96,15,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,97,2,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,98,2,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,99,33,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,100,33,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,101,3,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,102,3,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,103,7,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,104,7,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,105,13,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,106,13,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,107,16,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,108,16,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,109,17,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,110,17,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,111,12,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,112,12,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,113,26,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,114,26,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,115,29,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,116,4,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,117,4,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,118,29,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,119,21,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,120,21,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,121,8,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,122,8,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,123,9,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,124,9,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,125,34,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,126,34,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,127,10,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,128,10,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,129,6,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,130,6,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,131,23,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,132,23,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,133,36,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,134,36,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,135,28,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,136,28,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,137,32,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,138,32,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,139,20,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,140,20,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251002,post-prime,141,22,LN2,microbiome / homogenate assays,NOAA -80C
+20251002,post-prime,142,22,250ul DNA/RNA shield,RNA,NAL -20C walkin
+20251003,"24 hr recovery, post challenge",143,,,,
+20251003,"24 hr recovery, post challenge",144,,,,
+20251003,"24 hr recovery, post challenge",145,,,,
+20251003,"24 hr recovery, post challenge",146,,,,
+20251003,"24 hr recovery, post challenge",147,,,,
+20251003,"24 hr recovery, post challenge",148,,,,
+20251003,"24 hr recovery, post challenge",149,,,,
+20251003,"24 hr recovery, post challenge",150,,,,
+20251003,"24 hr recovery, post challenge",151,,,,
+20251003,"24 hr recovery, post challenge",152,,,,
+20251003,"24 hr recovery, post challenge",153,,,,
+20251003,"24 hr recovery, post challenge",154,,,,
+20251003,"24 hr recovery, post challenge",155,,,,
+20251003,"24 hr recovery, post challenge",156,,,,
+20251003,"24 hr recovery, post challenge",157,,,,
+20251003,"24 hr recovery, post challenge",158,,,,
+20251003,"24 hr recovery, post challenge",159,,,,
+20251003,"24 hr recovery, post challenge",160,,,,
+20251003,"24 hr recovery, post challenge",161,,,,
+20251003,"24 hr recovery, post challenge",162,,,,
+20251003,"24 hr recovery, post challenge",163,,,,
+20251003,"24 hr recovery, post challenge",164,,,,
+20251003,"24 hr recovery, post challenge",165,,,,
+20251003,"24 hr recovery, post challenge",166,,,,
+20251003,"24 hr recovery, post challenge",167,,,,
+20251003,"24 hr recovery, post challenge",168,,,,
+20251003,"24 hr recovery, post challenge",169,,,,
+20251003,"24 hr recovery, post challenge",170,,,,
+20251003,"24 hr recovery, post challenge",171,,,,
+20251003,"24 hr recovery, post challenge",172,,,,
+20251003,"24 hr recovery, post challenge",173,,,,
+20251003,"24 hr recovery, post challenge",174,,,,
+20251003,"24 hr recovery, post challenge",175,,,,
+20251003,"24 hr recovery, post challenge",176,,,,
+20251003,"24 hr recovery, post challenge",177,,,,
+20251003,"24 hr recovery, post challenge",178,,,,
+20251003,"24 hr recovery, post challenge",179,,,,
+20251003,"24 hr recovery, post challenge",180,,,,
+20251003,"24 hr recovery, post challenge",181,,,,
+20251003,"24 hr recovery, post challenge",182,,,,
+20251003,"24 hr recovery, post challenge",183,,,,
+20251003,"24 hr recovery, post challenge",184,,,,
+20251003,"24 hr recovery, post challenge",185,,,,
+20251003,"24 hr recovery, post challenge",186,,,,
+20251003,"24 hr recovery, post challenge",187,,,,
+20251003,"24 hr recovery, post challenge",188,,,,
+20251003,"24 hr recovery, post challenge",189,,,,
+20251003,"24 hr recovery, post challenge",190,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
