@@ -1,4 +1,4 @@
-﻿Tank,Label_color,Prime_treatment,Recovery_pre_challenge,Challenge_date,Notes,,  
+﻿Tank_number,Label_color,Prime_treatment,Recovery_pre_challenge,Challenge_date,Notes,,  
 1,red,72_hours,1_week,20251010,"44C heated tank using boiler water, very consistant, duration was ~2.5 hours when samples finished and 20C started",,  
 2,yellow,24_hours,,,,,  
 3,yellow,24_hours,1_week,20251010,"44C heated tank using boiler water, very consistant, duration was ~2.5 hours when samples finished and 20C started",,  
