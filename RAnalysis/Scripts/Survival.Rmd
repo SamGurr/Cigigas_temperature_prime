@@ -34,25 +34,20 @@ library(ggsurvfit) # survfit2
 library(gtsummary) # tbl_survfit
 ```
 
-
 ### load data
 
 ```{r load test data, echo=FALSE}
 
 # load the raw data, just the counts of dead individuals each day
 df_raw       <- read.csv("Data/Survival/survival.csv", header = T) 
-#df_raw[df_raw == "all"] <- 0 # do this if all individuals are dead in any cells
-df_raw <- df_raw %>% na.omit() %>% mutate_at(2:ncol(df_raw), ~as.numeric(as.character(.))) 
+df_raw[df_raw == "all"] <- 0 # do this if all individuals are dead in any cells
+df_raw       <- df_raw %>% na.omit() %>% mutate_at(2:ncol(df_raw), ~as.numeric(as.character(.))) 
 
 # load the stocking density data
-df_stocking       <- read.csv("Data/Survival/stocking_density.csv", header = T) 
-
+df_stocking  <- read.csv("Data/Survival/stocking_density.csv", header = T) 
 
 # experiment metadata
-df_metadata       <- read.csv("Data/experiment_metadata.csv", header = T)
-
-
-
+df_metadata  <- read.csv("Data/experiment_metadata.csv", header = T) 
 
 ```
 
@@ -156,7 +151,7 @@ for(r in 1:nrow(df_surv_1wk))  { # for each row
     print(df_out) # print to monitor progress
     
 } # close rows for each date - output cumulative table row by row for each tank
-View(df_out)
+# View(df_out)
 ```
 
 ### Test data, plot as barplots mean +- SE for each run
@@ -165,7 +160,18 @@ View(df_out)
 
 df_1week_complete <- merge(df_out, df_metadata, by = 'Tank_number')
 
-SummaryStats <- summarySE(df_1week_complete, measurevar="Percent_Survival", groupvars=c("Prime_treatment", "Date"))
+df_1week_complete$Prime_treatment <-  factor(df_1week_complete$Prime_treatmen, levels = c("0_hours", "6_hours", "24_hours", "72_hours"))
+ 
+ 
+# View(df_1week_complete)
+SummaryStats <- summarySE(df_1week_complete, measurevar="Percent_Survival", groupvars=c("Prime_treatment", "Date")) %>% 
+                    dplyr::mutate(Day = 
+                                    case_when(Date %in% 20251010 ~ 0,
+                                              Date %in% 20251011 ~ 1,
+                                              Date %in% 20251012 ~ 2,
+                                              Date %in% 20251013 ~ 3,
+                                              Date %in% 20251014 ~ 4,
+                                              Date %in% 20251015 ~ 5))
 
 
 # plot relative to stocking density aas embryos 
@@ -173,16 +179,16 @@ SummaryStats <- summarySE(df_1week_complete, measurevar="Percent_Survival", grou
 
 
 # plot relative to 100$% restart at D stage 
-PlotMeanSE <-  ggplot(SummaryStats, aes(x=Date, y=Percent_Survival, color=Prime_treatment)) + geom_line()+
-                          geom_point()+ 
+PlotMeanSE <-  ggplot(SummaryStats, aes(x=Day, y=Percent_Survival, color=Prime_treatment)) + geom_line()+
+                          geom_point(position=position_dodge(.1))+ 
                            geom_errorbar(aes(ymin=Percent_Survival-se, 
                                              ymax=Percent_Survival+se), width=.2,
                                         position=position_dodge(.1)) +
-                          # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                          scale_color_manual(values = c("darkgreen","orange","darkorange2","darkred")) +
                           theme(legend.position="right", legend.direction="vertical", 
                                 legend.title = element_blank())+ theme_bw() + 
-                          labs(x="Date", y="Percent Survival")+ #scale_y_continuous(breaks=seq(0,100,20))+ 
-                          ggtitle("Survival following 44C exposure (under 20C)") + 
+                          labs(x="Day", y="Percent Survival")+ #scale_y_continuous(breaks=seq(0,100,20))+ 
+                          ggtitle("") + 
                           theme(panel.grid.major = element_blank(), 
                                 panel.grid.minor = element_blank(), 
                                 panel.background = element_blank(), 
@@ -198,6 +204,114 @@ pdf("Output/survival_1weekrecovery_MeanSE.pdf", width=10, height=5)
 print(PlotMeanSE)
 dev.off()
 
+hormetic_curve <-  ggplot(SummaryStats %>% dplyr::filter(Date %in% 20251013), 
+                          aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                          geom_smooth(method = "loess") +
+                          # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                          theme(legend.position="right", legend.direction="vertical", 
+                                legend.title = element_blank())+ theme_bw() + 
+                          labs(x="Dose", 
+                               y="Response")+ #scale_y_continuous(breaks=seq(0,100,20))+ 
+                          ggtitle("Hormetic effect") + 
+                                theme(panel.grid.major = element_blank(), 
+                                panel.grid.minor = element_blank(), 
+                                panel.background = element_blank(), 
+                                axis.line = element_line(colour = "black"))
+hormetic_curve
+
+
+
+control_yint_day1          <- (SummaryStats %>% dplyr::filter(c(Date %in% 20251011 & Prime_treatment %in% '0_hours')))$Percent_Survival
+Day1_hormetic_curve_MeanSE <-  ggplot(SummaryStats %>% dplyr::filter(Date %in% 20251011), 
+                              aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                                    geom_point() +
+                                    geom_errorbar(aes(ymin = Percent_Survival - se, ymax = Percent_Survival + se), width = 0.2) +
+                                    geom_smooth(method = "loess", color = "grey20") +
+                                    geom_hline(yintercept = control_yint_day1, color = "grey50", linetype = "dashed", size = 1) +
+                                    # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                                    theme(legend.position="right", legend.direction="vertical", 
+                                          legend.title = element_blank())+ theme_bw() + 
+                                    labs(x="", 
+                                         y="Response")+ #scale_y_continuous(breaks=seq(0,100,20))+ 
+                                    ggtitle("Day 1") + 
+                                          theme(panel.grid.major = element_blank(), 
+                                          # axis.title.x = element_blank(),
+                                          panel.grid.minor = element_blank(), 
+                                          panel.background = element_blank(), 
+                                          axis.line = element_line(colour = "black"))
+
+
+control_yint_day2          <- (SummaryStats %>% dplyr::filter(c(Date %in% 20251012 & Prime_treatment %in% '0_hours')))$Percent_Survival
+Day2_hormetic_curve_MeanSE <-  ggplot(SummaryStats %>% dplyr::filter(Date %in% 20251012), 
+                              aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                                    geom_point() +
+                                    geom_errorbar(aes(ymin = Percent_Survival - se, ymax = Percent_Survival + se), width = 0.2) +
+                                    geom_smooth(method = "loess", color = "grey20") +
+                                    geom_hline(yintercept = control_yint_day2, color = "grey50", linetype = "dashed", size = 1) +
+                                    # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                                    theme(legend.position="right", legend.direction="vertical", 
+                                          legend.title = element_blank())+ theme_bw() + 
+                                    labs(x="", 
+                                         y="Response")+ #scale_y_continuous(breaks=seq(0,100,20))+ 
+                                    ggtitle("Day 2") + 
+                                          theme(panel.grid.major = element_blank(), 
+                                          # axis.title.x = element_blank(),
+                                          panel.grid.minor = element_blank(), 
+                                          panel.background = element_blank(), 
+                                          axis.line = element_line(colour = "black"))
+
+control_yint_day3          <- (SummaryStats %>% dplyr::filter(c(Date %in% 20251013 & Prime_treatment %in% '0_hours')))$Percent_Survival
+Day3_hormetic_curve_MeanSE <-  ggplot(SummaryStats %>% dplyr::filter(Date %in% 20251013), 
+                              aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                                    geom_point() +
+                                    geom_errorbar(aes(ymin = Percent_Survival - se, ymax = Percent_Survival + se), width = 0.2) +
+                                    geom_smooth(method = "loess", color = "grey20") +
+                                    geom_hline(yintercept = control_yint_day3, color = "grey50", linetype = "dashed", size = 1) +
+                                    # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                                    theme(legend.position="right", legend.direction="vertical", 
+                                          legend.title = element_blank())+ theme_bw() + 
+                                    labs(x="Dose", 
+                                         y= NA) + #scale_y_continuous(breaks=seq(0,100,20))+ 
+                                    ggtitle("Day 3") + 
+                                          theme(panel.grid.major = element_blank(),
+                                          axis.title.y  = element_blank(),
+                                          panel.grid.minor = element_blank(), 
+                                          panel.background = element_blank(), 
+                                          axis.line = element_line(colour = "black"))
+
+control_yint_day4          <- (SummaryStats %>% dplyr::filter(c(Date %in% 20251014 & Prime_treatment %in% '0_hours')))$Percent_Survival
+Day4_hormetic_curve_MeanSE <-  ggplot(SummaryStats %>% dplyr::filter(Date %in% 20251014), 
+                              aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                                    geom_point() +
+                                    geom_errorbar(aes(ymin = Percent_Survival - se, ymax = Percent_Survival + se), width = 0.2) +
+                                    geom_smooth(method = "loess", color = "grey20") +
+                                    geom_hline(yintercept = control_yint_day4, color = "grey50", linetype = "dashed", size = 1) +
+                                    # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                                    theme(legend.position="right", legend.direction="vertical", 
+                                          legend.title = element_blank())+ theme_bw() + 
+                                    labs(x="",
+                                         y="Response")+ #scale_y_continuous(breaks=seq(0,100,20))+
+                                    ggtitle("Day 4") + 
+                                          theme(panel.grid.major = element_blank(), 
+                                          axis.title.y  = element_blank(),
+                                          # axis.title.x = element_blank(),
+                                          panel.grid.minor = element_blank(), 
+                                          panel.background = element_blank(), 
+                                          axis.line = element_line(colour = "black"))
+
+hormetic_curve_MeanSE <- ggpubr::ggarrange(Day2_hormetic_curve_MeanSE,
+                                            Day3_hormetic_curve_MeanSE,
+                                            Day4_hormetic_curve_MeanSE,
+                                            nrow=1,
+                                            ncol = 3)
+
+
+
+# output curve 
+
+pdf("Output/survival_1weekrecovery_hormesis.pdf", width=8, height=5)
+print(hormetic_curve_MeanSE)
+dev.off()
 ```
 
 ### Test data, Kaplan Meier
@@ -304,9 +418,9 @@ surv_all <- survfit2(Surv(Days, Count_dead) ~ Treatment, data = df_binary)
 ```{r test data, plot Kaplan Meier}
 
 KaplanMeier.plot <- surv_all %>% 
-                        ggsurvfit(linetype_aes = TRUE, linewidth = 1,type ="survival") +
-                        scale_color_manual(values = c("lightgreen","turquoise","orange","darkred")) +
-                        scale_fill_manual(values = c("lightgreen","turquoise","orange","darkred")) +
+                        ggsurvfit(linetype_aes = F, linewidth = 1,type ="survival") +
+                        scale_color_manual(values = c("darkgreen","orange","darkorange2","darkred")) +
+                        scale_fill_manual(values = c("darkgreen","orange","darkorange2","darkred")) +
                         labs(
                           x = "Days",
                           y = "Overall survival probability"
@@ -317,9 +431,27 @@ KaplanMeier.plot <- surv_all %>%
                         scale_ggsurvfit(x_scales = list(breaks = 0:10)) #+
                        # add_pvalue(location  = "annotation", x = 8.5)
 
+
+KM_hormetic_curves <- ggpubr::ggarrange(KaplanMeier.plot,
+                                            hormetic_curve_MeanSE,
+                                            ncol=1,
+                                            nrow = 2)
+
+
 # plot the surv data
-pdf("Output/survival_test_KaplanMeier.pdf", width=5, height = 4)
-KaplanMeier.plot
+pdf("Output/survival_1weekrecovery_KaplanMeier.pdf", width=6, height = 8)
+KM_hormetic_curves
+dev.off()
+
+
+
+
+
+
+# output curve 
+
+pdf("Output/survival_1weekrecovery_hormesis.pdf", width=8, height=5)
+print(hormetic_curve_MeanSE)
 dev.off()
 
 ```
