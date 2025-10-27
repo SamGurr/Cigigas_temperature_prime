@@ -55,9 +55,9 @@ df_metadata  <- read.csv("Data/experiment_metadata.csv", header = T)
 
 # load the raw data, just the counts of dead individuals each day
 
-# 24 hour recover, post challenge
+# 24 hour recovery, post challenge
 df_stock_24hr     <- df_stocking %>% 
-                        filter(Date %in% '20251003_post_challenge') %>% # number per tank after the 44C exposure ad destrictive sampling
+                        filter(Date %in% '20251003_post_challenge') %>% # number per tank after the 44C exposure ad destructive sampling
                         select_if(~ !any(is.na(.))) %>% # keep the 12 relevant tanks (tanks that were not challenged did not have mortality)
                         select(!Note)
 
@@ -65,21 +65,32 @@ df_surv_24hr      <- df_raw %>%
                         filter(Date >= 20251003) %>% # when the 24 hour exposure started
                         select(c('Date', colnames(df_stock_24hr)[2:ncol(df_stock_24hr)]))
 
-# 24 hour recover, post challenge
+# 1 week recovery, post challenge
 df_stock_1wk     <- df_stocking %>% 
-                        filter(Date %in% '20251010_post_challenge') %>% # number per tank after the 44C exposure ad destrictive sampling
+                        filter(Date %in% '20251010_post_challenge') %>% # number per tank after the 44C exposure ad destructive sampling
                         select_if(~ !any(is.na(.))) %>% # keep the 12 relevant tanks (tanks that were not challenged did not have mortality)
                         select(!Note)
 
 df_surv_1wk      <- df_raw %>% 
-                        filter(Date >= 20251010) %>% # when the 24 hour exposure started
+                        filter(Date >= 20251010 & Date <= 20251016) %>% # when the 24 hour exposure started
                         select(c('Date', colnames(df_stock_1wk)[2:ncol(df_stock_1wk)]))
 
+
+# 3 weeks recovery, post challenge
+df_stock_3wk     <- df_stocking %>% 
+                        filter(Date %in% '20251024_post_challenge') %>% # number per tank after the 44C exposure ad destructive sampling
+                        select_if(~ !any(is.na(.))) %>% # keep the 12 relevant tanks (tanks that were not challenged did not have mortality)
+                        select(!Note) %>% 
+                        select(!Tank_34) # did not have sw flow until 1.5 hours into the 44C challenge - omit
+
+df_surv_3wk      <- df_raw %>% 
+                        filter(Date >= 20251024) %>% # when the 24 hour exposure started
+                        select(c('Date', colnames(df_stock_3wk)[2:ncol(df_stock_3wk)]))
 ```
 
 ### for loop for binary format
 
-```{r  for loop format to live and dead counts, echo=FALSE}
+```{r  1 week for loop format to live and dead counts, echo=FALSE}
 
 # loop matrix, start this
 loop_columns          <- data.frame(matrix(nrow = 1, ncol = 7))
@@ -87,8 +98,8 @@ colnames(loop_columns) <- c('Date', 'Tank_number', 'Treatment',
                             'Count_Alive', 'Count_Dead', 'Daily_Count_Dead', 'Percent_Survival') # names for comuns in the for loop
 
 # output file from the for loops
-df_cols <- data.frame()
-df_out  <- data.frame() # output datafarme, start it here
+df_cols     <- data.frame()
+df_out_1wk  <- data.frame() # output datafarme, start it here
 
 # start the loop
 for(r in 1:nrow(df_surv_1wk))  { # for each row
@@ -146,9 +157,84 @@ for(r in 1:nrow(df_surv_1wk))  { # for each row
   # Note: df_cols now contains as many rows as there are tank IDs at the given date loop.date
   
   } # close columns for each tank
-    df_out      <- rbind(df_out,df_cols) 
+    df_out_1wk   <- rbind(df_out_1wk,df_cols) 
     df_cols      <- data.frame() # start columns over again, gets the next row (date) for te previous loop
-    print(df_out) # print to monitor progress
+    print(df_out_1wk) # print to monitor progress
+    
+} # close rows for each date - output cumulative table row by row for each tank
+# View(df_out)
+```
+
+```{r  3 weeks for loop format to live and dead counts, echo=FALSE}
+
+# loop matrix, start this
+loop_columns          <- data.frame(matrix(nrow = 1, ncol = 7))
+colnames(loop_columns) <- c('Date', 'Tank_number', 'Treatment', 
+                            'Count_Alive', 'Count_Dead', 'Daily_Count_Dead', 'Percent_Survival') # names for comuns in the for loop
+
+# output file from the for loops
+df_cols      <- data.frame()
+df_out_3wks  <- data.frame() # output datafarme, start it here
+
+# start the loop
+for(r in 1:nrow(df_surv_3wk))  { # for each row
+  
+  loop.date <- df_surv_3wk[r,1] # get the date 
+
+  for (c in 2:ncol(df_surv_3wk)) { # at each date... call tank columns one by one
+    
+      # df_raw[c] <- as.numeric(df_raw[c]) # convert to numeric
+      
+      tankID         <- colnames(df_surv_3wk[c])
+      
+      starting_count <- (df_stock_3wk %>% dplyr::select(`tankID`))[1,1]
+      
+      cumulative.sum <- cumsum(df_surv_3wk[c]) # culative sum of the entire column c
+      
+      cum.count.dead   <- cumulative.sum[r,] # the cumulative count dead at loop.date row r, column c
+      
+      daily.count.dead <- df_surv_3wk[r,c]
+      
+      count.alive      <- starting_count - cum.count.dead # all tanks started with 20 individuals!
+      
+      percent.survival <- (count.alive/starting_count)*100
+      
+      tank.num         <- as.numeric(gsub('.*_', '', colnames(df_surv_3wk[c])))
+      
+      
+  
+  loop_columns$Date         <- loop.date
+  
+  loop_columns$Tank_number  <- tank.num
+  
+  loop_columns$Treatment     <- "3 weeks recovery"
+  
+   # if(tank.num == 1 | tank.num == 2 | tank.num == 3) {
+   #  loop_columns$Treatment = "60 minutes"
+   # } else if (tank.num == 4 | tank.num == 5 | tank.num == 6) {
+   #   loop_columns$Treatment = "120 minutes"
+   # } else if (tank.num == 7 | tank.num == 8 | tank.num == 9 | tank.num == 10) {
+   #   loop_columns$Treatment = "180 minutes"
+   # } else {
+   #   loop_columns$Treatment = "30 minutes"
+   # }
+  
+  loop_columns$Count_Alive           <- count.alive
+  
+  loop_columns$Count_Dead            <- cum.count.dead # cumulative sum of count dead
+  
+  loop_columns$Daily_Count_Dead      <- daily.count.dead # cumulative sum of count dead
+  
+  loop_columns$Percent_Survival      <- percent.survival 
+  
+  df_cols      <- rbind(df_cols,loop_columns) #bind to a cumulative list dataframe
+  
+  # Note: df_cols now contains as many rows as there are tank IDs at the given date loop.date
+  
+  } # close columns for each tank
+    df_out_3wks  <- rbind(df_out_3wks,df_cols) 
+    df_cols      <- data.frame() # start columns over again, gets the next row (date) for te previous loop
+    print(df_out_3wks) # print to monitor progress
     
 } # close rows for each date - output cumulative table row by row for each tank
 # View(df_out)
@@ -156,9 +242,9 @@ for(r in 1:nrow(df_surv_1wk))  { # for each row
 
 ### Test data, plot as barplots mean +- SE for each run
  
-```{r test data summary stats}
+```{r 1 week test data summary stats}
 
-df_1week_complete <- merge(df_out, df_metadata, by = 'Tank_number')
+df_1week_complete <- merge(df_out_1wk, df_metadata, by = 'Tank_number')
 
 df_1week_complete$Prime_treatment <-  factor(df_1week_complete$Prime_treatmen, levels = c("0_hours", "6_hours", "24_hours", "72_hours"))
  
@@ -314,6 +400,168 @@ print(hormetic_curve_MeanSE)
 dev.off()
 ```
 
+```{r 3 weeks test data summary stats}
+
+df_3weeks_complete <- merge(df_out_3wks, df_metadata, by = 'Tank_number')
+
+df_3weeks_complete$Prime_treatment <-  factor(df_3weeks_complete$Prime_treatmen, levels = c("0_hours", "6_hours", "24_hours", "72_hours"))
+ 
+ 
+# View(df_1week_complete)
+SummaryStats_3wks <- summarySE(df_3weeks_complete, measurevar="Percent_Survival", 
+                               groupvars=c("Prime_treatment", "Date")) %>% 
+                    dplyr::mutate(Day = 
+                                    case_when(Date %in% 20251024 ~ 0,
+                                              Date %in% 20251025 ~ 1,
+                                              Date %in% 20251026 ~ 2#,
+                                              # Date %in% 20251027 ~ 3,
+                                              # Date %in% 20251028 ~ 4,
+                                              # Date %in% 20251029 ~ 5
+                                              ))
+
+
+# plot relative to stocking density aas embryos 
+
+
+
+# plot relative to 100$% restart at D stage 
+PlotMeanSE <-  ggplot(SummaryStats_3wks, aes(x=Day, y=Percent_Survival, color=Prime_treatment)) + geom_line()+
+                          geom_point(position=position_dodge(.1))+ 
+                           geom_errorbar(aes(ymin=Percent_Survival-se, 
+                                             ymax=Percent_Survival+se), width=.2,
+                                        position=position_dodge(.1)) +
+                          scale_color_manual(values = c("darkgreen","orange","darkorange2","darkred")) +
+                          theme(legend.position="right", legend.direction="vertical", 
+                                legend.title = element_blank())+ theme_bw() + 
+                          labs(x="Day", y="Percent Survival")+ #scale_y_continuous(breaks=seq(0,100,20))+ 
+                          ggtitle("") + 
+                          theme(panel.grid.major = element_blank(), 
+                                panel.grid.minor = element_blank(), 
+                                panel.background = element_blank(), 
+                                axis.line = element_line(colour = "black"))
+PlotMeanSE
+
+
+# output the data !!
+
+write.csv(SummaryStats_3wks,"Output/survival_3weeksrecovery_MeanSE.csv")
+
+pdf("Output/survival_3weeksrecovery_MeanSE.pdf", width=10, height=5)
+print(PlotMeanSE)
+dev.off()
+
+hormetic_curve <-  ggplot(SummaryStats_3wks %>% dplyr::filter(Date %in% 20251025), 
+                          aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                          geom_smooth(method = "loess") +
+                          # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                          theme(legend.position="right", legend.direction="vertical", 
+                                legend.title = element_blank())+ theme_bw() + 
+                          labs(x="Dose", 
+                               y="Response")+ #scale_y_continuous(breaks=seq(0,100,20))+ 
+                          ggtitle("Hormetic effect") + 
+                                theme(panel.grid.major = element_blank(), 
+                                panel.grid.minor = element_blank(), 
+                                panel.background = element_blank(), 
+                                axis.line = element_line(colour = "black"))
+hormetic_curve
+
+
+
+control_yint_day1          <- (SummaryStats_3wks %>% dplyr::filter(c(Date %in% 20251025 & Prime_treatment %in% '0_hours')))$Percent_Survival
+Day1_hormetic_curve_MeanSE <-  ggplot(SummaryStats_3wks %>% dplyr::filter(Date %in% 20251025), 
+                              aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                                    geom_point() +
+                                    geom_errorbar(aes(ymin = Percent_Survival - se, ymax = Percent_Survival + se), width = 0.2) +
+                                    geom_smooth(method = "loess", color = "grey20") +
+                                    geom_hline(yintercept = control_yint_day1, color = "grey50", linetype = "dashed", size = 1) +
+                                    # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                                    theme(legend.position="right", legend.direction="vertical", 
+                                          legend.title = element_blank())+ theme_bw() + 
+                                    labs(x="", 
+                                         y="Response")+ #scale_y_continuous(breaks=seq(0,100,20))+ 
+                                    ggtitle("Day 1") + 
+                                          theme(panel.grid.major = element_blank(), 
+                                          # axis.title.x = element_blank(),
+                                          panel.grid.minor = element_blank(), 
+                                          panel.background = element_blank(), 
+                                          axis.line = element_line(colour = "black"))
+
+
+control_yint_day2          <- (SummaryStats_3wks %>% dplyr::filter(c(Date %in% 20251026 & Prime_treatment %in% '0_hours')))$Percent_Survival
+Day2_hormetic_curve_MeanSE <-  ggplot(SummaryStats_3wks %>% dplyr::filter(Date %in% 20251026), 
+                              aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                                    geom_point() +
+                                    geom_errorbar(aes(ymin = Percent_Survival - se, ymax = Percent_Survival + se), width = 0.2) +
+                                    geom_smooth(method = "loess", color = "grey20") +
+                                    geom_hline(yintercept = control_yint_day2, color = "grey50", linetype = "dashed", size = 1) +
+                                    # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                                    theme(legend.position="right", legend.direction="vertical", 
+                                          legend.title = element_blank())+ theme_bw() + 
+                                    labs(x="", 
+                                         y="Response")+ #scale_y_continuous(breaks=seq(0,100,20))+ 
+                                    ggtitle("Day 2") + 
+                                          theme(panel.grid.major = element_blank(), 
+                                          # axis.title.x = element_blank(),
+                                          panel.grid.minor = element_blank(), 
+                                          panel.background = element_blank(), 
+                                          axis.line = element_line(colour = "black"))
+
+control_yint_day3          <- (SummaryStats_3wks %>% dplyr::filter(c(Date %in% 20251027 & Prime_treatment %in% '0_hours')))$Percent_Survival
+Day3_hormetic_curve_MeanSE <-  ggplot(SummaryStats_3wks %>% dplyr::filter(Date %in% 20251027), 
+                              aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                                    geom_point() +
+                                    geom_errorbar(aes(ymin = Percent_Survival - se, ymax = Percent_Survival + se), width = 0.2) +
+                                    geom_smooth(method = "loess", color = "grey20") +
+                                    geom_hline(yintercept = control_yint_day3, color = "grey50", linetype = "dashed", size = 1) +
+                                    # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                                    theme(legend.position="right", legend.direction="vertical", 
+                                          legend.title = element_blank())+ theme_bw() + 
+                                    labs(x="Dose", 
+                                         y= NA) + #scale_y_continuous(breaks=seq(0,100,20))+ 
+                                    ggtitle("Day 3") + 
+                                          theme(panel.grid.major = element_blank(),
+                                          axis.title.y  = element_blank(),
+                                          panel.grid.minor = element_blank(), 
+                                          panel.background = element_blank(), 
+                                          axis.line = element_line(colour = "black"))
+
+control_yint_day4          <- (SummaryStats_3wks %>% dplyr::filter(c(Date %in% 20251028 & Prime_treatment %in% '0_hours')))$Percent_Survival
+Day4_hormetic_curve_MeanSE <-  ggplot(SummaryStats_3wks %>% dplyr::filter(Date %in% 20251028), 
+                              aes(x=as.numeric(gsub('_.*','',Prime_treatment)), y=Percent_Survival)) + 
+                                    geom_point() +
+                                    geom_errorbar(aes(ymin = Percent_Survival - se, ymax = Percent_Survival + se), width = 0.2) +
+                                    geom_smooth(method = "loess", color = "grey20") +
+                                    geom_hline(yintercept = control_yint_day4, color = "grey50", linetype = "dashed", size = 1) +
+                                    # scale_color_manual(values=c("green4", "darkorange1", "purple"))+
+                                    theme(legend.position="right", legend.direction="vertical", 
+                                          legend.title = element_blank())+ theme_bw() + 
+                                    labs(x="",
+                                         y="Response")+ #scale_y_continuous(breaks=seq(0,100,20))+
+                                    ggtitle("Day 4") + 
+                                          theme(panel.grid.major = element_blank(), 
+                                          axis.title.y  = element_blank(),
+                                          # axis.title.x = element_blank(),
+                                          panel.grid.minor = element_blank(), 
+                                          panel.background = element_blank(), 
+                                          axis.line = element_line(colour = "black"))
+
+hormetic_curve_MeanSE <- ggpubr::ggarrange(Day1_hormetic_curve_MeanSE,
+                                            Day2_hormetic_curve_MeanSE,#,
+                                            #Day3_hormetic_curve_MeanSE,
+                                            #Day4_hormetic_curve_MeanSE,
+                                            nrow=1,
+                                            ncol = 2)
+
+
+
+# output curve 
+
+pdf("Output/survival_1weekrecovery_hormesis.pdf", width=8, height=5)
+print(hormetic_curve_MeanSE)
+dev.off()
+```
+
+
 ### Test data, Kaplan Meier
 
 #### About:
@@ -345,7 +593,7 @@ dev.off()
 
 ```{r test data KM data}
 # create new columns for live and dead based on the count and proportion (of alive) tobackcalculate dead - these are integers! 
-df_KM <- df_1week_complete %>% 
+df_KM_1wk <- df_1week_complete %>% 
           dplyr::mutate(Count_Alive = 
                           as.numeric(gsub(",","",Count_Alive))) %>% # remove the commas from these numbers- id as character if not removed!
           dplyr::mutate(proportion = Percent_Survival/100,
@@ -356,44 +604,59 @@ df_KM <- df_1week_complete %>%
                            #Count_dead = Count_total - Count_Alive)
           # dplyr::filter(!proportion == 0.00) # omit rows where the number of live individuals is 0
 
-View(df_KM)
+View(df_KM_1wk)
+
+
+# create new columns for live and dead based on the count and proportion (of alive) tobackcalculate dead - these are integers! 
+df_KM_3wk <- df_3weeks_complete %>% 
+          dplyr::mutate(Count_Alive = 
+                          as.numeric(gsub(",","",Count_Alive))) %>% # remove the commas from these numbers- id as character if not removed!
+          dplyr::mutate(proportion = Percent_Survival/100,
+                        Count_total = case_when(proportion == 0 ~ 0,
+                                                proportion >0 ~
+                                                 (1/as.numeric(proportion))*
+                                                 as.numeric(Count_Alive)))# %>% # proportion is that of alive
+                           #Count_dead = Count_total - Count_Alive)
+          # dplyr::filter(!proportion == 0.00) # omit rows where the number of live individuals is 0
+
+View(df_KM_3wk)
 ```
 
 ### Test data, convert to binary format
 
-```{r test data convert to binary}
+```{r 1 week test data convert to binary}
 
 # (1) Including tank - to use as surv object in coxme statistics (random factor included!) not suitable for plotting
 
 # Call the cumulative dataframe that we will write to in the for loop below
-df_binary     <- data.frame() # start dataframe  - all
+df_binary_1wk     <- data.frame() # start dataframe  - all
 # run it 
-for (i in 1:nrow(df_KM)) {
+for (i in 1:nrow(df_KM_1wk)) {
    #count_alive <- round(df_Exp2[i,]$Count_alive/100) # divide all counts by 1000, round to nearest
    #count_dead  <- round(df_Exp2[i,]$Count_dead/100)  # divide all counts by 1000, round to nearest
    
-   count_alive <- round(df_KM[i,]$Count_Alive) # raw counts
-   count_dead  <- round(df_KM[i,]$Daily_Count_Dead)  # raw counts
+   count_alive <- round(df_KM_1wk[i,]$Count_Alive) # raw counts
+   count_dead  <- round(df_KM_1wk[i,]$Daily_Count_Dead)  # raw counts
    
    loopDF           <- data.frame(matrix(0,ncol = 4, nrow = (count_alive + count_dead))) 
    colnames(loopDF) <- (c('Date','Treatment','Tank_number','Count_dead'))
    loopDF           <- loopDF %>% 
                             dplyr::mutate(
-                              Treatment   = df_KM[i,]$Prime_treatment,
-                              Tank_number = df_KM[i,]$Tank_number,
-                              Date        = df_KM[i,]$Date)
+                              Treatment   = df_KM_1wk[i,]$Prime_treatment,
+                              Tank_number = df_KM_1wk[i,]$Tank_number,
+                              Date        = df_KM_1wk[i,]$Date)
   loopDF[c(1:count_dead),4] = 1 # 1 for dead 
   loopDF[c((count_dead + 1):nrow(loopDF)),4] = 0 # 0 for alive
 
   loopDF           <- data.frame(loopDF) # name dataframe for this single row
-  df_binary <- rbind(df_binary,loopDF) #bind to a cumulative list dataframe
+  df_binary_1wk <- rbind(df_binary_1wk,loopDF) #bind to a cumulative list dataframe
 }
 
-df_binary <- df_binary %>% na.omit()
+df_binary_1wk <- df_binary_1wk %>% na.omit()
 # View(df_binary)
 
 # Convert to Date class
-dates_asDate <- as.Date(df_binary$Date, format = "%Y%m%d")
+dates_asDate <- as.Date(df_binary_1wk$Date, format = "%Y%m%d")
 
 # Find earliest date
 earliest <- min(dates_asDate)
@@ -402,7 +665,52 @@ earliest <- min(dates_asDate)
 days_since_earliest <- as.numeric(dates_asDate - earliest)
 
 # 
-df_binary$Days <- as.numeric(days_since_earliest)
+df_binary_1wk$Days <- as.numeric(days_since_earliest)
+```
+
+
+```{r 3 weeks test data convert to binary}
+
+# (1) Including tank - to use as surv object in coxme statistics (random factor included!) not suitable for plotting
+
+# Call the cumulative dataframe that we will write to in the for loop below
+df_binary_3weeks     <- data.frame() # start dataframe  - all
+# run it 
+for (i in 1:nrow(df_KM_3wk)) {
+   #count_alive <- round(df_Exp2[i,]$Count_alive/100) # divide all counts by 1000, round to nearest
+   #count_dead  <- round(df_Exp2[i,]$Count_dead/100)  # divide all counts by 1000, round to nearest
+   
+   count_alive <- round(df_KM_3wk[i,]$Count_Alive) # raw counts
+   count_dead  <- round(df_KM_3wk[i,]$Daily_Count_Dead)  # raw counts
+   
+   loopDF           <- data.frame(matrix(0,ncol = 4, nrow = (count_alive + count_dead))) 
+   colnames(loopDF) <- (c('Date','Treatment','Tank_number','Count_dead'))
+   loopDF           <- loopDF %>% 
+                            dplyr::mutate(
+                              Treatment   = df_KM_3wk[i,]$Prime_treatment,
+                              Tank_number = df_KM_3wk[i,]$Tank_number,
+                              Date        = df_KM_3wk[i,]$Date)
+  loopDF[c(1:count_dead),4] = 1 # 1 for dead 
+  loopDF[c((count_dead + 1):nrow(loopDF)),4] = 0 # 0 for alive
+
+  loopDF           <- data.frame(loopDF) # name dataframe for this single row
+  df_binary_3weeks <- rbind(df_binary_3weeks,loopDF) #bind to a cumulative list dataframe
+}
+
+df_binary_3weeks <- df_binary_3weeks %>% na.omit()
+# View(df_binary)
+
+# Convert to Date class
+dates_asDate <- as.Date(df_binary_3weeks$Date, format = "%Y%m%d")
+
+# Find earliest date
+earliest <- min(dates_asDate)
+
+# Calculate number of days since earliest date
+days_since_earliest <- as.numeric(dates_asDate - earliest)
+
+# 
+df_binary_3weeks$Days <- as.numeric(days_since_earliest)
 ```
 
 ### Test data, breat survival object
@@ -411,11 +719,14 @@ df_binary$Days <- as.numeric(days_since_earliest)
 
 surv_all <- survfit2(Surv(Days, Count_dead) ~ Treatment, data = df_binary)
 
+
+surv_3wks <- survfit2(Surv(Days, Count_dead) ~ Treatment, data = df_binary_3weeks)
+
 ```
 
 ### Test data, plot Kapla Meier
 
-```{r test data, plot Kaplan Meier}
+```{r 1 week plot Kaplan Meier}
 
 KaplanMeier.plot <- surv_all %>% 
                         ggsurvfit(linetype_aes = F, linewidth = 1,type ="survival") +
@@ -443,10 +754,42 @@ pdf("Output/survival_1weekrecovery_KaplanMeier.pdf", width=6, height = 8)
 KM_hormetic_curves
 dev.off()
 
+# output curve 
+
+pdf("Output/survival_1weekrecovery_hormesis.pdf", width=8, height=5)
+print(hormetic_curve_MeanSE)
+dev.off()
+
+```
 
 
+```{r 3 weeks plot Kaplan Meier}
+
+KaplanMeier.plot_3wks <- surv_3wks %>% 
+                        ggsurvfit(linetype_aes = F, linewidth = 1,type ="survival") +
+                        scale_color_manual(values = c("darkgreen","orange","darkorange2","darkred")) +
+                        scale_fill_manual(values = c("darkgreen","orange","darkorange2","darkred")) +
+                        labs(
+                          x = "Days",
+                          y = "Overall survival probability"
+                        ) + 
+                        add_confidence_interval() +
+                        # add_risktable() +
+                        # add_risktable_strata_symbol() + # (symbol = "\U25CF", size = 10
+                        scale_ggsurvfit(x_scales = list(breaks = 0:10)) #+
+                       # add_pvalue(location  = "annotation", x = 8.5)
 
 
+KM_hormetic_curves <- ggpubr::ggarrange(KaplanMeier.plot_3wks,
+                                            hormetic_curve_MeanSE,
+                                            ncol=1,
+                                            nrow = 2)
+
+
+# plot the surv data
+pdf("Output/survival_1weekrecovery_KaplanMeier.pdf", width=6, height = 8)
+KM_hormetic_curves
+dev.off()
 
 # output curve 
 

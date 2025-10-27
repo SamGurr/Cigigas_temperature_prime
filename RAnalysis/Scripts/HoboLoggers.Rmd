@@ -1,0 +1,221 @@
+---
+title: "Hobo Logger"
+author: "Sam Gurr"
+date: "10/24/2025"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+### SET UP
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# SET WORKING DIRECTORY 
+knitr::opts_knit$set(root.dir = "C:/Users/gurrs/Documents/Github_repositories/Cgigas_temperature_prime/RAnalysis") # Sam's work
+```
+
+### LOAD PACKAGES
+```{r, echo=FALSE}
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(kableExtra) # nice Rmd tables
+```
+
+### load data
+
+```{r load test data, echo=FALSE}
+
+# load the raw data, just the counts of dead individuals each day
+Logger1      <- read.csv("Data/Seawater_chemistry/Hobo_temperature/20251024_Logger_1.csv", header = T, sep =',') 
+# Logger2      <- read.csv("Data/Seawater_chemistry/Hobo_temperature/20251024_Logger_2.csv", header = T) 
+Logger3      <- read.csv("Data/Seawater_chemistry/Hobo_temperature/20251024_Logger_3.csv", header = T) 
+Logger4      <- read.csv("Data/Seawater_chemistry/Hobo_temperature/20251024_Logger_4.csv", header = T) 
+
+```
+
+```{r edit and merge}
+
+Logger1_clean <- Logger1[,c(2,3)] %>% dplyr::mutate('Logger_Num' = 1)
+colnames(Logger1_clean) <- c('Time', 'Temperature', 'Logger_Num')
+
+# Logger2_clean <- Logger2[,c(2,3)] %>% dplyr::mutate('Logger_Num' = 2)
+# colnames(Logger2_clean) <- c('Time', 'Temperature', 'Logger_Num')
+
+Logger3_clean <- Logger3[,c(2,3)] %>% dplyr::mutate('Logger_Num' = 3)
+colnames(Logger3_clean) <- c('Time', 'Temperature', 'Logger_Num')
+
+Logger4_clean <- Logger4[,c(2,3)] %>% dplyr::mutate('Logger_Num' = 4)
+colnames(Logger4_clean) <- c('Time', 'Temperature', 'Logger_Num')
+
+
+# merge to master data file
+
+Df_master <- rbind(Logger1_clean, 
+                   # Logger2_clean, 
+                   Logger3_clean, 
+                   Logger4_clean)
+View(Df_master)
+
+# format date 
+Df_master$Time <- lubridate::mdy_hm(Df_master$Time)
+```
+
+```{r plot all}
+
+# all data 
+ggplot(Df_master, 
+       aes(x = Time,
+           y = Temperature)) + 
+  geom_point() +
+  facet_wrap(~Logger_Num)
+
+
+```
+
+
+```{r plot 33C prime periods}
+# prime period all
+ggplot(
+      (Df_master %>% 
+         dplyr::filter(Time > ('2025-9-29') & Time < ('2025-10-03'))),
+       aes(x = Time,
+           y = Temperature)) + 
+  geom_point() +
+  facet_wrap(~Logger_Num)
+
+
+# 72 hour prime (trough #3, tank 3)
+ggplot(
+      (Df_master%>%
+         dplyr::filter( c( (as.Date(Time) >= as.Date('2025-09-29')) &
+                            (as.Date(Time) <= as.Date('2025-10-02'))
+                         )
+                      ) %>% 
+         dplyr::filter(Logger_Num %in% 1)
+       ),
+       aes(x = Time,
+           y = Temperature)) + 
+  geom_point() +
+  theme_classic()
+
+
+
+Rmisc::summarySE(data =  
+                   as.data.frame(Df_master%>%
+                     dplyr::filter( c( (as.Date(Time) >= as.Date('2025-09-30')) &
+                                        (as.Date(Time) <= as.Date('2025-10-01'))
+                                     )
+                                  ) %>% 
+                     dplyr::filter(Logger_Num %in% 1)
+                   ),
+                 measurevar = "Temperature"
+                 )
+
+# 24 hour prime (trough #3, tank 3)
+ggplot(
+      (Df_master%>%
+         dplyr::filter( c( (as.Date(Time) >= as.Date('2025-10-01')) &
+                            (as.Date(Time) <= as.Date('2025-10-03'))
+                         )
+                      ) %>% 
+         dplyr::filter(Logger_Num %in% 2)
+       ),
+       aes(x = Time,
+           y = Temperature)) + 
+  geom_point() +
+  theme_classic()
+
+
+
+
+# 6 hour prime (trough #3, tank 3)
+ggplot(
+      (Df_master%>%
+         dplyr::filter(as.Date(Time) == as.Date('2025-10-02')) %>% 
+         dplyr::filter(lubridate::hour(Time) >=7 & lubridate::hour(Time) < 17) %>% 
+         dplyr::filter(Logger_Num %in% 3)),
+       aes(x = Time,
+           y = Temperature)) + 
+  geom_point() +
+  theme_classic()
+
+
+```
+
+```{r plot 44C challenges}
+
+# first challenge,m after 24 hours of recovery
+ggplot(
+      (Df_master%>%
+         dplyr::filter(as.Date(Time) == as.Date('2025-10-03')) %>% 
+         dplyr::filter(lubridate::hour(Time) >= 13 & lubridate::hour(Time) < 18) %>% 
+         dplyr::filter(Logger_Num %in% 1)),
+       aes(x = Time,
+           y = Temperature)) + 
+  geom_point() +
+  theme_classic()
+
+# second challenge,m after 1 week of recovery
+ggplot(
+      (Df_master%>%
+         dplyr::filter(as.Date(Time) == as.Date('2025-10-10')) %>% 
+         dplyr::filter(lubridate::hour(Time) >= 10 & lubridate::hour(Time) < 16) %>% 
+         dplyr::filter(Logger_Num %in% 1)),
+       aes(x = Time,
+           y = Temperature)) + 
+  geom_point() +
+  theme_classic()
+
+
+# third challenge,m after 3 week of recovery
+ggplot(
+      (Df_master%>%
+         dplyr::filter(as.Date(Time) == as.Date('2025-10-24')) %>% 
+         dplyr::filter(lubridate::hour(Time) >= 10 & lubridate::hour(Time) < 16) %>% 
+         dplyr::filter(Logger_Num %in% 2)),
+       aes(x = Time,
+           y = Temperature)) + 
+  geom_point() +
+  theme_classic()
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
