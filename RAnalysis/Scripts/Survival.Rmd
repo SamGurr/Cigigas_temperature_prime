@@ -81,7 +81,8 @@ df_stock_3wk     <- df_stocking %>%
                         filter(Date %in% '20251024_post_challenge') %>% # number per tank after the 44C exposure ad destructive sampling
                         select_if(~ !any(is.na(.))) %>% # keep the 12 relevant tanks (tanks that were not challenged did not have mortality)
                         select(!Note) %>% 
-                        select(!Tank_34) # did not have sw flow until 1.5 hours into the 44C challenge - omit
+                        select(!Tank_34) %>% # did not have sw flow until 1.5 hours into the 44C challenge - omit
+                        select(!c(Tank_7)) # a 24 hour reached 0 survival quickly, toggle outlier
 
 df_surv_3wk      <- df_raw %>% 
                         filter(Date >= 20251024) %>% # when the 24 hour exposure started
@@ -413,9 +414,9 @@ SummaryStats_3wks <- summarySE(df_3weeks_complete, measurevar="Percent_Survival"
                     dplyr::mutate(Day = 
                                     case_when(Date %in% 20251024 ~ 0,
                                               Date %in% 20251025 ~ 1,
-                                              Date %in% 20251026 ~ 2#,
-                                              # Date %in% 20251027 ~ 3,
-                                              # Date %in% 20251028 ~ 4,
+                                              Date %in% 20251026 ~ 2,
+                                              Date %in% 20251027 ~ 3,
+                                              Date %in% 20251028 ~ 4#,
                                               # Date %in% 20251029 ~ 5
                                               ))
 
@@ -546,17 +547,17 @@ Day4_hormetic_curve_MeanSE <-  ggplot(SummaryStats_3wks %>% dplyr::filter(Date %
                                           axis.line = element_line(colour = "black"))
 
 hormetic_curve_MeanSE <- ggpubr::ggarrange(Day1_hormetic_curve_MeanSE,
-                                            Day2_hormetic_curve_MeanSE,#,
-                                            #Day3_hormetic_curve_MeanSE,
-                                            #Day4_hormetic_curve_MeanSE,
+                                            Day2_hormetic_curve_MeanSE,
+                                            Day3_hormetic_curve_MeanSE,
+                                            Day4_hormetic_curve_MeanSE,
                                             nrow=1,
-                                            ncol = 2)
+                                            ncol = 4)
 
 
 
 # output curve 
 
-pdf("Output/survival_1weekrecovery_hormesis.pdf", width=8, height=5)
+pdf("Output/survival_3weeksrecovery_hormesis.pdf", width=8, height=5)
 print(hormetic_curve_MeanSE)
 dev.off()
 ```
@@ -787,13 +788,13 @@ KM_hormetic_curves <- ggpubr::ggarrange(KaplanMeier.plot_3wks,
 
 
 # plot the surv data
-pdf("Output/survival_1weekrecovery_KaplanMeier.pdf", width=6, height = 8)
+pdf("Output/survival_3weeksrecovery_KaplanMeier.pdf", width=6, height = 8)
 KM_hormetic_curves
 dev.off()
 
 # output curve 
 
-pdf("Output/survival_1weekrecovery_hormesis.pdf", width=8, height=5)
+pdf("Output/survival_3weeksrecovery_hormesis.pdf", width=8, height=5)
 print(hormetic_curve_MeanSE)
 dev.off()
 
